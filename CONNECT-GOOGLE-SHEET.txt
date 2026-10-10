@@ -1,0 +1,30 @@
+CONNECT YOUR EXISTING GOOGLE SHEET — ONE-TIME SETUP
+
+The code is already prepared in lead-capture.gs. You do not need to write it yourself, create a new spreadsheet or make the Sheet public.
+
+1. Sign in to Google with an account that can edit this Sheet:
+https://docs.google.com/spreadsheets/d/1Z8Z4W7idnLc5K5tWwfZVeIjwLFBtz5ADSNaU3T_1aZw/edit
+
+2. In the Sheet, choose Extensions > Apps Script. Google creates a script project. Name it Mahadev Website Leads.
+
+3. Open lead-capture.gs from this website folder in Notepad. Copy all its text. Replace the sample code in the Apps Script editor with this code, then save.
+
+4. Select setup in the function dropdown at the top and click Run. Google may ask you to authorise the script to use your Sheet. Review the requested permissions and authorise your own script. It creates a Website Leads tab in the specified spreadsheet. Other tabs are preserved.
+
+5. Click Deploy > New deployment. Click the gear beside Select type > Web app.
+   Description: Mahadev website lead capture
+   Execute as: Me
+   Who has access: Anyone
+   Click Deploy. If your Workspace policy does not allow Anyone, contact the administrator or use a server-side alternative. Do not make the Sheet itself public.
+
+6. Copy the Web app URL ending /exec. Send that URL back in this chat and I can put it into your website files. Alternatively, open config.js in Notepad and paste the URL between the empty quotes after leadEndpoint. Save, then upload the updated config.js with the website.
+
+7. Submit an enquiry labelled TEST from the website. Confirm a row appears in Website Leads and the website says the enquiry was saved. Remove the test row after checking. Do not assume activation is complete until both checks pass.
+
+AFTER SETUP
+Save my enquiry writes to Website Leads, including the page where the enquiry originated.
+Send details on WhatsApp opens WhatsApp with the filled details; the visitor still taps Send. It works independently of Google Sheet saving.
+If you later edit the Apps Script, use Deploy > Manage deployments > Edit > New version > Deploy.
+
+Google deployment documentation:
+https://developers.google.com/apps-script/guides/web

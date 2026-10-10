@@ -7,9 +7,9 @@ Shop No. 147, Kishan Ganj Market, Delhi–110007.
 Atul Chauhan: +91 8920030789. Rakesh Chauhan: +91 9891486995.
 Map searches the locality; it does not claim a verified shop pin.
 
-GOOGLE SHEET LEAD CAPTURE — ACTIVATION REQUIRED
+GOOGLE SHEET LEAD CAPTURE — CONNECTED
 Destination: https://docs.google.com/spreadsheets/d/1Z8Z4W7idnLc5K5tWwfZVeIjwLFBtz5ADSNaU3T_1aZw/edit
-The connected account received a permission denied response. No changes were made to the Sheet and no live lead write has been verified.
+The deployed Apps Script endpoint is configured in config.js. On 10 October 2026, a labelled test POST returned an ok:true acknowledgement after the script completed its Sheet-write logic. The Sheet could not be independently read through the connector. Test Lead ID: 078b19d3-55e8-4374-8eea-149a2bf5b5f0. Remove this test row in Website Leads when convenient.
 1. Open the destination Sheet as an account with edit permission.
 2. Choose Extensions > Apps Script. Paste lead-capture.gs into the project.
 3. Run setup once and approve the requested Google permissions. This creates a separate Website Leads tab without replacing existing tabs.
@@ -27,7 +27,7 @@ Canonical URLs, page-specific Open Graph/X metadata, robots.txt and the sitemap 
 Guidance: https://developers.google.com/search/docs/fundamentals/seo-starter-guide
 Apps Script deployment: https://developers.google.com/apps-script/guides/web
 
-Supplied HEIC files could not be decoded with the available image libraries. They have not been used as unidentified property listings. The supplied business-card image is retained in assets for reference; the website uses the supplied logo optimized to WebP.
+Supplied HEIC photos have now been converted to optimized WebP. Office portraits, shop exterior and office interior are included on the home, About and Contact pages. Videos are awaiting the user’s selection and are not included.
 
 MULTI-PAGE STRUCTURE
 index.html — Buy & Sell Property in Delhi | Mahadev Properties
@@ -47,3 +47,8 @@ This package is prepared for the domain but has not been uploaded or published.
 VALIDATION
 All ten HTML pages passed local link/anchor checks, one-H1 and form presence checks, unique canonical checks, schema parsing and sitemap validation. JavaScript syntax checks passed. Automated visual/browser testing could not run because the installed browser failed to launch in this environment. Live Google Sheet submissions remain unverified pending activation.
 
+
+UPDATE: Every page has separate Save my enquiry and Send details on WhatsApp buttons. WhatsApp uses the entered details and opens a draft for the visitor to send; it does not claim to write a Sheet row. Google still denies access and no Apps Script deployment URL is available. Follow CONNECT-GOOGLE-SHEET.txt to activate saving.
+
+CONNECTED RELEASE — 10 OCTOBER 2026
+Upload both config.js and script.js from this release, or replace the complete website with this package. The endpoint is now configured. The response-origin check includes Google’s sandbox host format. If the old message persists, refresh browser cache after uploading. WhatsApp remains an independent action and opens a filled message for the visitor to send.
