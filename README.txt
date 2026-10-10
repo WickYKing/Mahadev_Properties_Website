@@ -1,54 +1,29 @@
-MAHADEV PROPERTIES — REBUILT WEBSITE
+MAHADEV PROPERTIES WEBSITE (REBUILT, 10 OCTOBER 2026)
 
-Open index.html to view the website. Upload all HTML pages, style.css, script.js, config.js, robots.txt, sitemap.xml and assets/ to the root of delhipropertybuyandsale.in. Enable HTTPS and redirect www and HTTP to https://delhipropertybuyandsale.in. Redirect /index.html to / on your host. Keep lead-capture.gs and this README outside the public upload.
+WHAT TO UPLOAD
+Upload these to the root of delhipropertybuyandsale.in:
+  all 10 .html pages, style.css, script.js, config.js, robots.txt, sitemap.xml and the assets folder.
+Do NOT upload: README.txt, CONNECT-GOOGLE-SHEET.txt, lead-capture.gs, OPEN-WEBSITE.cmd.
+Turn on HTTPS on your hosting and redirect http:// and www to https://delhipropertybuyandsale.in
 
-CONTACT DETAILS
-Shop No. 147, Kishan Ganj Market, Delhi–110007.
-Atul Chauhan: +91 8920030789. Rakesh Chauhan: +91 9891486995.
-Map searches the locality; it does not claim a verified shop pin.
+PREVIEW ON YOUR COMPUTER
+Extract the ZIP, open the mahadev-properties folder and double-click OPEN-WEBSITE.cmd (or open index.html in Chrome/Edge).
 
-GOOGLE SHEET LEAD CAPTURE — CONNECTED
-Destination: https://docs.google.com/spreadsheets/d/1Z8Z4W7idnLc5K5tWwfZVeIjwLFBtz5ADSNaU3T_1aZw/edit
-The deployed Apps Script endpoint is configured in config.js. On 10 October 2026, a labelled test POST returned an ok:true acknowledgement after the script completed its Sheet-write logic. The Sheet could not be independently read through the connector. Test Lead ID: 078b19d3-55e8-4374-8eea-149a2bf5b5f0. Remove this test row in Website Leads when convenient.
-1. Open the destination Sheet as an account with edit permission.
-2. Choose Extensions > Apps Script. Paste lead-capture.gs into the project.
-3. Run setup once and approve the requested Google permissions. This creates a separate Website Leads tab without replacing existing tabs.
-4. Deploy > New deployment > Web app. Execute as yourself; allow access to Anyone. If your Workspace administrator blocks anonymous web apps, use a server-side integration instead.
-5. Copy the deployment URL ending /exec into leadEndpoint in config.js.
-6. Submit a clearly labelled test enquiry, check that the row appears in Website Leads, and confirm the website shows a saved confirmation. Delete the test row afterwards.
-7. When changing Apps Script code, update the deployment version.
-Do not put Google passwords, tokens or service-account keys into client-side files.
+GOOGLE SHEET LEAD CAPTURE
+Already connected. config.js contains your live Apps Script address, and the form sends exactly the same fields as before,
+so nothing needs to change in Google Apps Script. Enquiries go to the "Website Leads" tab of your Sheet.
+After uploading, send one test enquiry named TEST, check the row appears, then delete it.
+If you ever need to reconnect, follow CONNECT-GOOGLE-SHEET.txt.
 
-The form uses a cross-origin iframe POST with an acknowledgement after the Sheet write. It never treats an opaque network response as success. Failed or unconfigured submissions provide an explicit WhatsApp alternative. The script checks required fields and consent, neutralizes spreadsheet formula injection, serializes writes, and deduplicates retries by Lead ID. Basic honeypot protection is included; for substantial traffic add server-side rate limits and CAPTCHA. The Sheet must remain private to the business team.
+WHAT CHANGED IN THIS REBUILD
+- New design based on your shop signboard (dark panel, white lettering, saffron from the logo).
+- Fonts: Martel for headings and Hind for text (Google Fonts, both support Hindi).
+- Cleaner pages: services shown as a simple list, a "how it works" section, Atul and Rakesh contact panels, office photos, FAQ.
+- Mobile: new slide-down menu and a fixed Call / Enquire / WhatsApp bar at the bottom of the screen.
+- Form: clearer messages, clears itself after a successful save, works even if the site is opened on http://.
+- FAQ structured data added for Google on the homepage.
+- Privacy page no longer shows the enquiry form (it links back to it instead).
 
-SEO AND LAUNCH
-Content uses property dealer / Kishan Ganj / Delhi NCR naturally, with service explanations and visible FAQs. One H1, descriptive title and meta description, semantic headings, RealEstateAgent structured data, consistent address and phone numbers, local assets, lazy map, responsive layout and privacy notice are included. Unverified client/property statistics and invented listings are omitted.
-Canonical URLs, page-specific Open Graph/X metadata, robots.txt and the sitemap now use https://delhipropertybuyandsale.in. Submit https://delhipropertybuyandsale.in/sitemap.xml in Google Search Console after uploading the site. Verify the business address and phone on Google Business Profile. Confirm service coverage, any claimed statistics and brokerage terms before adding them. SEO does not guarantee rankings.
-Guidance: https://developers.google.com/search/docs/fundamentals/seo-starter-guide
-Apps Script deployment: https://developers.google.com/apps-script/guides/web
-
-Supplied HEIC photos have now been converted to optimized WebP. Office portraits, shop exterior and office interior are included on the home, About and Contact pages. Videos are awaiting the user’s selection and are not included.
-
-MULTI-PAGE STRUCTURE
-index.html — Buy & Sell Property in Delhi | Mahadev Properties
-about.html — About Mahadev Properties | Property Dealer in Kishan Ganj
-services.html — Property Services in Delhi NCR | Sale, Purchase, Rent
-property-guide.html — Buying & Selling Property: Enquiry Guide | Delhi
-contact.html — Contact Mahadev Properties | Kishan Ganj, Delhi 110007
-buy-property-delhi.html — Buy Property in Delhi | Mahadev Properties
-sell-property-delhi.html — Sell Property in Delhi | Mahadev Properties
-rent-property-delhi.html — Property Rental Enquiries in Delhi | Mahadev Properties
-property-collaboration-delhi.html — Property Collaboration in Delhi | Mahadev Properties
-privacy.html — Enquiry Privacy Notice | Mahadev Properties
-Every page includes an enquiry form. Service forms default to the relevant requirement. The source URL is saved with each submitted lead once the Google integration is activated.
-Homepage copy follows visitor problem, practical impact and proposed solution. Search intents are inferred from the business services, not measured keyword volumes.
-This package is prepared for the domain but has not been uploaded or published.
-
-VALIDATION
-All ten HTML pages passed local link/anchor checks, one-H1 and form presence checks, unique canonical checks, schema parsing and sitemap validation. JavaScript syntax checks passed. Automated visual/browser testing could not run because the installed browser failed to launch in this environment. Live Google Sheet submissions remain unverified pending activation.
-
-
-UPDATE: Every page has separate Save my enquiry and Send details on WhatsApp buttons. WhatsApp uses the entered details and opens a draft for the visitor to send; it does not claim to write a Sheet row. Google still denies access and no Apps Script deployment URL is available. Follow CONNECT-GOOGLE-SHEET.txt to activate saving.
-
-CONNECTED RELEASE — 10 OCTOBER 2026
-Upload both config.js and script.js from this release, or replace the complete website with this package. The endpoint is now configured. The response-origin check includes Google’s sandbox host format. If the old message persists, refresh browser cache after uploading. WhatsApp remains an independent action and opens a filled message for the visitor to send.
+CONTACT DETAILS USED
+Shop No. 147, Kishan Ganj Market, Delhi 110007
+Atul Chauhan +91 89200 30789 (also WhatsApp)   Rakesh Chauhan +91 98914 86995
