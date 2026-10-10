@@ -53,7 +53,7 @@
   window.addEventListener('message',function(e){
     if(!pending || !trustedOrigin(e.origin)) return;
     var d=e.data||{}; if(d.type!=='mahadev-lead' || d.id!==pending.id) return;
-    clearTimeout(pending.timer); pending.frame.remove(); pending=null; submit.disabled=false; submit.textContent='Save my enquiry';
+    clearTimeout(pending.timer); pending.frame.remove(); pending=null; submit.disabled=false; submit.textContent='Submit the form';
     if(d.ok){ say('Thank you. Your enquiry has been saved and our team will call you.'); fallback.hidden=true; form.reset(); if(form.dataset.defaultRequirement) form.elements.requirement.value=form.dataset.defaultRequirement; fingerprint=''; }
     else { say('Your enquiry could not be saved. Please try again, or send it on WhatsApp.'); fallback.hidden=false; }
   });
@@ -72,9 +72,9 @@
     var post=document.createElement('form'); post.method='POST'; post.action=endpoint; post.target=frame.name; post.hidden=true;
     Object.keys(f).forEach(function(k){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=f[k]; post.appendChild(i); });
     document.body.appendChild(post);
-    submit.disabled=true; submit.textContent='Saving…'; say('Saving your enquiry…'); fallback.hidden=true;
+    submit.disabled=true; submit.textContent='Submitting…'; say('Submitting your enquiry…'); fallback.hidden=true;
     pending={id:f.id,frame:frame,timer:setTimeout(function(){
-      frame.remove(); pending=null; submit.disabled=false; submit.textContent='Save my enquiry';
+      frame.remove(); pending=null; submit.disabled=false; submit.textContent='Submit the form';
       say('We could not confirm your enquiry was saved. Please try again, or send it on WhatsApp.'); fallback.hidden=false;
     },25000)};
     post.submit(); post.remove();
