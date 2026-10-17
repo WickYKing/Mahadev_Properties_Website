@@ -1,9 +1,0 @@
-CONNECTED — 10 October 2026
-
-The Apps Script endpoint provided in chat is configured in config.js. A test enquiry named TEST — Website connection check returned ok:true.
-Test Lead ID: 078b19d3-55e8-4374-8eea-149a2bf5b5f0
-Destination tab: Website Leads
-
-Upload the complete folder to your website, or replace BOTH config.js and script.js if using the latest photos-and-WhatsApp release. Then refresh your browser. No further Apps Script deployment is needed for this configuration change.
-
-The test row is not a customer enquiry and may be deleted. Direct connector inspection of the Sheet remains unavailable; the successful acknowledgement was returned by your deployed script after its write logic.

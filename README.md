@@ -1,81 +1,60 @@
-# Mahadev Properties — GitHub Pages Production Build
+# Mahadev Properties — Production GitHub Pages setup
 
-This repository is arranged so GitHub Pages **does not publish the source tree directly**.
-GitHub Actions builds a separate `dist/` directory and deploys only that artifact.
+This repository is configured to build the existing multi-page static website with Vite and deploy **only the generated `dist/` directory** to GitHub Pages.
 
-## What this fixes
+## What this changes
 
-The live domain will no longer contain these original URLs/files:
+The live domain no longer publishes these original filenames:
 
-- `/style.css`
-- `/script.js`
-- `/config.js`
-- `/lead-capture.gs`
-- source maps (`*.map`)
-- setup/readme/private helper files
+- `style.css`
+- `script.js`
+- `config.js`
+- `lead-capture.gs`
+- setup/documentation files
+- source maps
 
-CSS and JavaScript receive content-hashed production names. CSS is Base64-wrapped and JavaScript is encoded/obfuscated for casual source inspection. The original readable source files remain outside the Pages artifact.
+The browser receives hashed/minified production files such as:
 
-> Important: No browser-based website can make client-side HTML/CSS/JavaScript completely secret. A browser must receive the code needed to render and operate the page. This setup prevents publishing your original readable source files and makes the production JavaScript substantially harder to read/copy, but it is not cryptographic protection.
+- `assets/app-<hash>.js`
+- `assets/site-<hash>.css`
 
-## First-time GitHub setup
+Frontend code can never be made completely secret because a browser must download the code it executes. This setup prevents the original readable files from being served under their old predictable URLs and removes source maps.
 
-1. Create a GitHub repository and upload **the contents of this folder**.
-2. Prefer a **private repository** if your GitHub plan supports Pages for private repositories and you do not want visitors to see the source repository on GitHub.
-3. In the repository open **Settings > Secrets and variables > Actions**.
-4. Create a repository secret named exactly `LEAD_ENDPOINT`.
-5. Put your Google Apps Script Web App URL ending in `/exec` in that secret.
-6. Open **Settings > Pages**.
-7. Under **Build and deployment**, select **GitHub Actions** as the source.
-8. Push/merge to the `main` branch. The included workflow builds and deploys the production artifact.
+## Required GitHub setting
 
-## GoDaddy DNS
+Create a repository Actions secret:
 
-Keep the DNS records that already point `delhipropertybuyandsale.in` to GitHub Pages. The production build generates a `CNAME` file containing:
+`LEAD_ENDPOINT`
 
-`delhipropertybuyandsale.in`
+Value: your Google Apps Script Web App `/exec` URL.
 
-DNS does not hide website source; the build/deployment structure is what prevents your original files from being directly published.
+**Important:** the endpoint is compiled into the browser bundle and can be discovered by a determined visitor. It is not a password. Validation/anti-abuse controls must remain server-side in Apps Script.
 
-## How publishing works
+## GitHub Pages
 
-`src/` -> GitHub Actions build -> `dist/` -> GitHub Pages
+In GitHub:
 
-Only `dist/` is uploaded to Pages. `dist/` is generated during the Action and is ignored by Git.
+1. Open **Settings → Pages**.
+2. Set **Source** to **GitHub Actions**.
+3. Keep the custom domain as `delhipropertybuyandsale.in`.
+4. Enable **Enforce HTTPS** after DNS is valid.
 
-### Production transformation
+Your existing GoDaddy DNS can remain unchanged if the domain already resolves correctly to GitHub Pages.
 
-- `src/style.css` becomes a hashed production stylesheet whose rules are Base64-wrapped
-- `src/script.js` + runtime lead configuration become a hashed encoded/obfuscated production script
-- HTML references those generated filenames with integrity hashes
-- no `.map` files are generated
-- private Google Apps Script source stays under `private/` and is not deployed
-
-## Updating the website
-
-Edit files under `src/`, commit, and push to `main`. Do **not** manually create or upload `dist/`.
-
-## Google Apps Script endpoint
-
-The endpoint is injected from the GitHub Actions secret during the build. This keeps it out of the repository and removes the public `/config.js` file.
-
-The endpoint itself cannot be treated as a true browser secret: visitors' browsers must ultimately send form submissions to it, so a determined user can discover the network destination. Authentication credentials, passwords, service-account keys, private API keys, and database secrets must never be placed in frontend code.
-
-## Local build
-
-No third-party build dependencies are required. Node.js 22 is sufficient.
-
-macOS/Linux:
+## Local test
 
 ```bash
-LEAD_ENDPOINT='https://script.google.com/macros/s/YOUR_ID/exec' npm run build
+npm ci
+LEAD_ENDPOINT="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" npm run build
+npm run preview
 ```
 
-PowerShell:
+The build automatically fails if original source filenames or source maps appear in `dist/`.
 
-```powershell
-$env:LEAD_ENDPOINT='https://script.google.com/macros/s/YOUR_ID/exec'
-npm run build
-```
+## Do not publish Apps Script source here
 
-The generated site will be in `dist/`.
+Keep `lead-capture.gs`, spreadsheet IDs, internal notes, and setup files in a private repository or secure local storage. They are not needed by GitHub Pages.
+
+## If this GitHub repository is public
+
+The **repository source itself is still publicly readable on github.com**. GitHub Actions only controls what is served on your domain. To keep source code private as well, use a private source repository (with a Pages-capable plan) or a private-source/public-build two-repository workflow.

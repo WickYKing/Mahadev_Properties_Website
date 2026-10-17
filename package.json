@@ -1,9 +1,17 @@
 {
-  "name": "mahadev-properties-secure-pages",
-  "version": "1.0.0",
+  "name": "mahadev-properties-production",
   "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "node build.mjs"
+    "dev": "vite",
+    "build": "vite build && node tools/verify-build.mjs",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "8.3.4"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }
