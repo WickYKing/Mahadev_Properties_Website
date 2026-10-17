@@ -20,8 +20,8 @@ export default defineConfig(({ command }) => {
   }
 
   return {
-    // Relative asset URLs work on the custom domain and on GitHub preview URLs.
-    base: './',
+    // The custom domain is served from the site root, so use root-absolute asset URLs.
+    base: '/',
     publicDir: 'public',
     define: {
       __LEAD_ENDPOINT__: JSON.stringify(leadEndpoint),
