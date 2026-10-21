@@ -127,7 +127,7 @@ jobs:
           find dist -maxdepth 2 -type f -print | sort
 
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
