@@ -21,68 +21,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Check source images
+      - name: Prepare clean production site
         run: |
-          echo "Checking public/assets..."
-          ls -la public || true
-          ls -la public/assets || true
+          rm -rf dist
+          mkdir -p dist
 
-          test -f public/assets/logo.webp || {
-            echo "::error::public/assets/logo.webp is missing"
-            exit 1
-          }
+          cp *.html dist/
+          cp CNAME dist/
+          cp robots.txt dist/
+          cp sitemap.xml dist/
+          cp .nojekyll dist/ || true
+          cp -a assets dist/assets
 
-      - name: Validate configuration
-        env:
-          LEAD_ENDPOINT: ${{ secrets.LEAD_ENDPOINT }}
-        run: |
-          if [ -z "$LEAD_ENDPOINT" ]; then
-            echo "::error::LEAD_ENDPOINT secret is missing."
+          echo "Checking for standalone source files..."
+          if find dist -type f \( -name "*.css" -o -name "*.js" -o -name "*.gs" -o -name "*.cmd" -o -name "*.mjs" \) | grep -q .; then
+            echo "::error::Standalone source file found in production output"
+            find dist -type f
             exit 1
           fi
 
-      - name: Build production website
-        env:
-          LEAD_ENDPOINT: ${{ secrets.LEAD_ENDPOINT }}
-        run: npm run build
-
-      - name: Ensure static images are deployed
-        run: |
-          mkdir -p dist/assets
-
-          cp -a public/assets/. dist/assets/
-
-          if [ -f public/CNAME ]; then
-            cp public/CNAME dist/CNAME
-          fi
-
-          echo "Production assets:"
-          ls -lah dist/assets/
-
-      - name: Verify logo exists in production
-        run: |
-          test -f dist/assets/logo.webp || {
-            echo "::error::dist/assets/logo.webp was not created"
-            exit 1
-          }
-
-          test -s dist/assets/logo.webp || {
-            echo "::error::dist/assets/logo.webp is empty"
-            exit 1
-          }
-
-          echo "Logo verified successfully."
+          echo "Production files:"
+          find dist -maxdepth 2 -type f -print | sort
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4

@@ -19,9 +19,254 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600&family=Martel:wght@700;800&display=swap">
-<link rel="stylesheet" href="style.css">
-<script src="config.js" defer></script>
-<script src="script.js" defer></script>
+<style>
+:root{
+  --ink:#102f50;--ink-2:#081d34;--saffron:#ed721d;--saffron-dk:#9c420a;--blue:#102f50;
+  --paper:#ffffff;--tile:#f3f6f9;--line:#dbe2ea;--text:#1d3041;--muted:#536474;
+  --display:'Martel',Georgia,'Noto Serif Devanagari',serif;
+  --body:'Hind','Segoe UI',Roboto,Arial,sans-serif;
+  --wrap:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:100px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--text);font:400 17px/1.65 var(--body)}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);color:var(--ink);margin:0 0 .5em;line-height:1.18;font-weight:800}
+h1{font-size:clamp(2.1rem,4.4vw,3.5rem);letter-spacing:-.01em}
+h2{font-size:clamp(1.65rem,3vw,2.35rem)}
+h3{font-size:1.2rem;font-weight:700;line-height:1.3}
+p{margin:0 0 1em}
+.wrap{width:min(var(--wrap),100% - 48px);margin-inline:auto}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:10px 14px;z-index:100}
+.skip:focus{left:8px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* header */
+.site-header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line)}
+.header-row{display:flex;align-items:center;justify-content:space-between;min-height:88px;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--display);font-weight:800;font-size:1.15rem;color:var(--ink);line-height:1.15}
+.brand img{height:68px;width:auto}
+.brand small{display:block;font-family:var(--body);font-weight:500;font-size:.8rem;color:var(--muted);margin-top:2px}
+#navigation{display:flex;align-items:center;gap:26px;font-size:.98rem}
+#navigation a{text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}
+#navigation a:hover{border-color:var(--line)}
+#navigation a[aria-current=page]{border-color:var(--saffron);font-weight:600}
+#navigation .nav-call{background:var(--ink);color:#fff;padding:10px 16px;border-radius:3px;border:0;font-weight:600}
+#navigation .nav-call:hover{background:var(--ink-2)}
+#menu{display:none;width:46px;height:46px;border:1px solid var(--line);background:#fff;border-radius:3px;cursor:pointer;padding:12px 11px;flex-direction:column;justify-content:space-between}
+#menu span{display:block;height:2px;background:var(--ink);transition:transform .2s,opacity .2s}
+#menu[aria-expanded=true] span:nth-child(1){transform:translateY(8.5px) rotate(45deg)}
+#menu[aria-expanded=true] span:nth-child(2){opacity:0}
+#menu[aria-expanded=true] span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 22px;border-radius:3px;border:2px solid transparent;font-weight:600;font-size:1rem;text-decoration:none;cursor:pointer;line-height:1.2;text-align:center}
+.btn-saffron{background:var(--saffron);color:#112b43}
+.btn-saffron:hover{background:#ff8c37}
+.btn-line{border-color:var(--ink);color:var(--ink);background:transparent}
+.btn-line:hover{background:var(--ink);color:#fff}
+.btn-wa{background:#1f7a46;color:#fff}
+.btn-wa:hover{background:#196339}
+.btn[disabled]{opacity:.6;cursor:wait}
+
+/* hero */
+.hero{padding-top:56px}
+.hero-grid{display:grid;grid-template-columns:1.25fr .85fr;gap:56px;align-items:center;padding-bottom:56px}
+.kicker{font-weight:600;color:var(--saffron-dk);margin-bottom:14px;font-size:1.02rem}
+.lead{font-size:1.18rem;color:var(--muted);max-width:56ch}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.hero-photo{margin:0;position:relative;border:10px solid var(--ink);background:var(--ink);max-width:440px;justify-self:end;width:100%}
+.hero-photo img{aspect-ratio:4/5;object-fit:cover;object-position:center 12%;width:100%}
+.hero-photo figcaption{background:var(--ink);color:#fff;font-size:.88rem;padding:10px 4px 2px}
+.signbar{background:var(--ink);color:#fff;font-family:var(--display);font-weight:700;font-size:clamp(1rem,2.2vw,1.45rem);padding:16px 0;text-align:center;letter-spacing:.02em}
+.signbar i{color:var(--saffron);font-style:normal;padding:0 .6em}
+
+/* sections */
+.band{padding:84px 0}
+.band-tile{background:var(--tile)}
+.band-ink{background:var(--ink-2);color:#dfe7ef}
+.band-ink h2{color:#fff}
+.section-lead{color:var(--muted);font-size:1.08rem;max-width:58ch}
+.split{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
+.split > div:first-child{position:sticky;top:110px}
+
+.svc-list{border-top:2px solid var(--ink)}
+.svc{display:block;text-decoration:none;padding:24px 8px 26px;border-bottom:1px solid var(--line)}
+.svc h3{margin-bottom:.35em;font-size:1.35rem}
+.svc p{color:var(--muted);margin-bottom:.7em;max-width:60ch}
+.svc-go{font-weight:600;color:var(--saffron-dk);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.svc:hover{background:var(--tile)}
+.svc:hover .svc-go{color:var(--ink)}
+
+.problem h2{max-width:22ch}
+.problem-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:28px}
+.problem-cols p{border-left:3px solid var(--saffron);padding-left:18px;color:#c9d5e1}
+.problem-end{margin-top:22px;font-size:1.15rem;color:#fff;font-weight:500}
+
+.steps{list-style:none;padding:0;margin:36px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:36px;counter-reset:s}
+.steps li{counter-increment:s;border-top:2px solid var(--ink);padding-top:18px}
+.steps li::before{content:counter(s);display:block;font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1;color:var(--saffron);margin-bottom:14px}
+.steps p{color:var(--muted)}
+.band-ink .steps li{border-color:#fff}
+
+.people{display:grid;grid-template-columns:1.2fr .8fr 1fr;gap:32px;align-items:center}
+.person-photo{margin:0;border:8px solid var(--ink)}
+.person-photo img{aspect-ratio:3/4;object-fit:cover;width:100%}
+.people-text{align-self:center}
+.person{border:2px solid var(--ink);padding:24px}
+.person h3{font-size:1.4rem;margin-bottom:2px}
+.person p{color:var(--muted);margin-bottom:14px}
+.person a{display:block;font-weight:600;font-size:1.15rem;text-decoration:none}
+.person a:hover{color:var(--saffron-dk)}
+.person .wa + .wa{color:var(--saffron-dk)}
+.person .wa{font-size:.98rem;color:#1f7a46;text-decoration:underline;text-underline-offset:4px;margin-top:6px}
+
+.gallery{display:grid;gap:18px;margin-top:28px}
+.gallery.g2{grid-template-columns:repeat(2,minmax(0,360px))}
+.gallery.g3{grid-template-columns:repeat(3,1fr)}
+.gallery.g4{grid-template-columns:repeat(4,1fr)}
+.gallery figure{margin:0}
+.gallery img{aspect-ratio:3/4;object-fit:cover;width:100%;background:var(--tile)}
+.gallery figcaption{font-size:.92rem;color:var(--muted);padding-top:8px}
+
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:first-of-type{border-top:2px solid var(--ink)}
+.faq summary{cursor:pointer;list-style:none;padding:20px 40px 20px 0;font-weight:600;font-size:1.1rem;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:6px;top:14px;font-size:1.6rem;color:var(--saffron-dk);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);padding-bottom:12px;max-width:68ch}
+
+.note{max-width:820px}
+.note p{color:var(--muted)}
+.link-row{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:18px}
+.link-row a{font-weight:600;color:var(--saffron-dk);text-underline-offset:5px}
+.qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:28px}
+.qa-grid p{color:var(--muted)}
+
+.contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:stretch}
+.addr{font-style:normal;font-size:1.2rem;line-height:1.6;margin-bottom:20px}
+.contact-lines a{display:block;font-weight:600;margin-bottom:6px;text-decoration:none}
+.contact-lines a:hover{color:var(--saffron-dk)}
+.contact-lines{margin-bottom:24px}
+.map{min-height:360px;border:2px solid var(--ink)}
+.map iframe{width:100%;height:100%;min-height:360px;border:0;display:block}
+
+.prose{max-width:760px}
+.prose h2{margin-top:1.6em;font-size:1.5rem}
+.prose p{color:var(--muted)}
+
+/* enquiry */
+.enquiry{background:var(--ink);color:#dfe7ef;padding:84px 0}
+.enquiry-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
+.enquiry h2{color:#fff}
+.enquiry-intro p{color:#c9d5e1}
+.big-phone{display:inline-block;font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,3vw,2.2rem);color:#fff;text-decoration:none;border-bottom:3px solid var(--saffron);margin:10px 0 22px}
+.small{font-size:.92rem}
+#lead-form{background:#fff;color:var(--text);padding:32px;border-top:6px solid var(--saffron)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+#lead-form label{display:block;font-weight:600;font-size:.95rem;margin-bottom:16px}
+.form-grid label{margin-bottom:0!important}
+#lead-form input:not([type=checkbox]),#lead-form select,#lead-form textarea{display:block;width:100%;margin-top:6px;padding:12px;border:1.5px solid #b9b5ad;border-radius:3px;background:#fff;font-weight:400;min-height:48px}
+#lead-form textarea{resize:vertical;min-height:90px}
+#lead-form input:focus,#lead-form select:focus,#lead-form textarea:focus{border-color:var(--ink);outline:3px solid rgba(232,113,26,.35);outline-offset:0}
+#lead-form .form-grid + label{margin-top:16px}
+.consent{display:flex!important;gap:10px;align-items:flex-start;font-weight:400!important;color:var(--muted)}
+.consent input{width:20px;height:20px;margin-top:3px;flex:none;accent-color:var(--saffron-dk)}
+.consent a{color:var(--saffron-dk)}
+.form-actions{display:flex;flex-wrap:wrap;gap:12px}
+#form-status{margin:14px 0 0;font-weight:600;color:var(--ink)}
+#form-status:empty{display:none}
+#whatsapp-fallback{margin-top:10px}
+#whatsapp-fallback[hidden]{display:none}
+.trap{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* footer */
+.site-footer{background:#081d34;color:#c9d5e1;padding:56px 0 24px;font-size:.96rem}
+.footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1.2fr .9fr;gap:32px}
+.site-footer h3{color:#fff;font-family:var(--body);font-weight:600;font-size:1rem;margin-bottom:10px}
+.site-footer a{display:block;text-decoration:none;margin-bottom:6px}
+.site-footer a:hover{color:#fff;text-decoration:underline}
+.site-footer address{font-style:normal;margin-bottom:8px}
+.site-footer .footer-logo{width:190px;height:auto;margin-bottom:14px}
+.copyright{border-top:1px solid #23405f;margin-top:36px;padding-top:18px;font-size:.88rem;color:#8ea2b6}
+.mobile-bar{display:none}
+
+/* responsive */
+@media (max-width:980px){
+  #menu{display:flex}
+  #navigation{display:none;position:absolute;left:0;right:0;top:100%;background:#fff;flex-direction:column;align-items:stretch;gap:0;padding:8px 24px 20px;border-bottom:1px solid var(--line);box-shadow:0 12px 24px rgba(16,47,80,.14)}
+  #navigation.open{display:flex}
+  #navigation a{padding:14px 0;border-bottom:1px solid var(--line)}
+  #navigation a[aria-current=page]{border-bottom-color:var(--line);color:var(--saffron-dk)}
+  #navigation .nav-call{margin-top:14px;text-align:center;border-bottom:0}
+  .hero-grid,.split,.enquiry-grid,.contact-grid{grid-template-columns:1fr;gap:36px}
+  .split > div:first-child{position:static}
+  .hero-photo{justify-self:start;max-width:380px}
+  .people{grid-template-columns:1fr 1fr}
+  .people-text{grid-column:1/-1}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .gallery.g4{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  body{font-size:16.5px;padding-bottom:62px}
+  .wrap{width:calc(100% - 36px)}
+  .band,.enquiry{padding:60px 0}
+  .hero{padding-top:36px}
+  .hero-grid{padding-bottom:40px}
+  .hero-actions .btn{flex:1 1 100%}
+  .hero-photo{max-width:none}
+  .hero-photo img{aspect-ratio:4/3}
+  .problem-cols,.steps,.qa-grid{grid-template-columns:1fr;gap:24px}
+  .people{grid-template-columns:1fr}
+  .gallery.g3,.gallery.g2{grid-template-columns:1fr 1fr}
+  .gallery.g3 figure:last-child{grid-column:1/-1}
+  .gallery.g3 figure:last-child img{aspect-ratio:4/3}
+  .form-grid{grid-template-columns:1fr}
+  #lead-form{padding:22px 18px}
+  .form-actions .btn{flex:1 1 100%}
+  .footer-grid{grid-template-columns:1fr}
+  .brand{font-size:1.02rem}
+  .brand img{height:56px}
+  .mobile-bar{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);padding-bottom:env(safe-area-inset-bottom,0)}
+  .mobile-bar a{color:#fff;text-decoration:none;text-align:center;padding:16px 4px;font-weight:600;border-right:1px solid #23405f}
+  .mobile-bar a:nth-child(2){background:var(--saffron);color:var(--ink)}
+  .mobile-bar a:last-child{border-right:0}
+}
+
+/* map, instagram strip, reels */
+.map{min-height:380px;border:2px solid var(--ink);background:var(--tile)}
+.map iframe{width:100%;height:100%;min-height:380px;border:0;display:block}
+.insta-strip{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
+.insta-strip p{color:#c9d5e1;max-width:52ch;margin:0}
+.insta-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-ghost{border-color:#fff;color:#fff}
+.btn-ghost:hover{background:#fff;color:var(--ink)}
+.gallery-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.gallery-head h2{margin:0}
+.reels{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;align-items:start}
+.reels .instagram-media{min-width:0!important;width:100%!important;margin:0!important}
+.reel-empty{grid-column:1/-1;border:2px dashed var(--line);padding:40px 28px;text-align:center;background:var(--tile)}
+.reel-empty h3{font-size:1.4rem}
+.reel-empty p{color:var(--muted);max-width:56ch;margin:0 auto 18px}
+.reel-video{margin:0;background:#000}
+.reel-video video{width:100%;aspect-ratio:9/16;display:block;background:#000}
+.reel-video figcaption{background:#fff;padding:10px 0;color:var(--muted);font-size:.95rem}
+@media (max-width:980px){.people{grid-template-columns:1fr 1fr}.person-photo{max-width:360px}}
+@media (max-width:700px){.people{grid-template-columns:1fr}.map,.map iframe{min-height:300px}.insta-actions .btn{flex:1 1 100%}}
+.reel{margin:0;background:#fff;border:1px solid var(--line);display:flex;flex-direction:column}
+.reel iframe{width:100%;height:620px;border:0;display:block;background:var(--tile)}
+.reel figcaption{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);font-size:.95rem}
+.reel figcaption a{font-weight:600;color:var(--saffron-dk);text-underline-offset:4px}
+.reel figcaption a:last-child{color:var(--muted)}
+.reels-more{text-align:center;margin-top:28px}
+@media (max-width:700px){.reel iframe{height:580px}}
+
+</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "RealEstateAgent", "@id": "https://delhipropertybuyandsale.in/#business", "name": "Mahadev Properties", "url": "https://delhipropertybuyandsale.in/", "logo": "https://delhipropertybuyandsale.in/assets/logo-navy.webp", "image": "https://delhipropertybuyandsale.in/assets/office-exterior.webp", "telephone": "+918920030789", "address": {"@type": "PostalAddress", "streetAddress": "Shop No. 147, Kishan Ganj Market", "addressLocality": "Delhi", "addressRegion": "Delhi", "postalCode": "110007", "addressCountry": "IN"}, "areaServed": "Delhi NCR", "contactPoint": [{"@type": "ContactPoint", "name": "Atul Chauhan", "telephone": "+918920030789", "contactType": "property enquiries"}]}, {"@type": "WebPage", "@id": "https://delhipropertybuyandsale.in/contact.html#page", "url": "https://delhipropertybuyandsale.in/contact.html", "name": "Contact Mahadev Properties | Kishan Ganj, Delhi 110007", "description": "Call Atul Chauhan on 8920030789. Visit Shop 147, Kishan Ganj Market, Delhi 110007 or send a property enquiry.", "about": {"@id": "https://delhipropertybuyandsale.in/#business"}}]}</script>
 </head>
 <body>
@@ -91,5 +336,94 @@
 <div class="wrap copyright">© <span id="year">2026</span> Mahadev Properties</div>
 </footer>
 <div class="mobile-bar"><a href="tel:+918920030789">Call</a><a href="#enquiry">Enquire</a><a href="https://wa.me/918920030789?text=Hello%20Mahadev%20Properties%2C%20I%20would%20like%20to%20discuss%20a%20property%20requirement." target="_blank" rel="noopener">WhatsApp</a></div>
+
+<script>
+// Google Apps Script deployment for Website Leads.
+window.MAHADEV_CONFIG = { leadEndpoint: 'https://script.google.com/macros/s/AKfycbxeKycw02MrJm_vKBII70x4ukXEJydLD3qGTG89EWxmsKuK3sKbFzVjjtXDlmmoaUWv/exec', siteUrl: 'https://delhipropertybuyandsale.in' };
+
+'use strict';
+(function(){
+  var year=document.getElementById('year'); if(year) year.textContent=new Date().getFullYear();
+
+  // Mobile menu
+  var menu=document.getElementById('menu'), nav=document.getElementById('navigation');
+  function closeMenu(){ if(!nav) return; nav.classList.remove('open'); menu.setAttribute('aria-expanded','false'); menu.setAttribute('aria-label','Open navigation'); }
+  if(menu && nav){
+    menu.addEventListener('click',function(){
+      var open=menu.getAttribute('aria-expanded')!=='true';
+      nav.classList.toggle('open',open); menu.setAttribute('aria-expanded',String(open)); menu.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+    });
+    nav.querySelectorAll('a').forEach(function(a){ a.addEventListener('click',closeMenu); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeMenu(); });
+  }
+
+  // Enquiry form (not present on every page)
+  var form=document.getElementById('lead-form'); if(!form) return;
+  var statusEl=document.getElementById('form-status'), submit=document.getElementById('submit'), fallback=document.getElementById('whatsapp-fallback'), waBtn=document.getElementById('send-whatsapp');
+  if(form.dataset.defaultRequirement) form.elements.requirement.value=form.dataset.defaultRequirement;
+
+  function say(t){ statusEl.textContent=t; }
+  function uuid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();           // HTTPS / localhost
+    var b=new Uint8Array(16); (window.crypto||window.msCrypto).getRandomValues(b); // plain-HTTP fallback
+    b[6]=(b[6]&15)|64; b[8]=(b[8]&63)|128;
+    var h=Array.prototype.map.call(b,function(x){return ('0'+x.toString(16)).slice(-2);}).join('');
+    return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+  }
+  function collect(){
+    if(!form.reportValidity()){ say('Please fill in the required fields marked *.'); return null; }
+    var fields=Object.fromEntries(new FormData(form));
+    fields.phone=String(fields.phone||'').replace(/\D/g,'').replace(/^0(?=\d{10}$)/,'').replace(/^91(?=\d{10}$)/,'');
+    if(!/^[6-9]\d{9}$/.test(fields.phone)){ say('Please enter a valid 10-digit Indian mobile number.'); form.elements.phone.focus(); return null; }
+    return fields;
+  }
+  var REQ={Purchase:'Buy a property',Sale:'Sell a property',Rent:'Rent or lease',Collaboration:'Collaboration'};
+  function whatsappUrl(f){
+    var rows=[['Name',f.name],['Mobile',f.phone],['Requirement',REQ[f.requirement]||f.requirement],['Location',f.location],['Property type',f.propertyType],['Budget / expected price',f.budget],['Details',f.message]];
+    var lines=['Hello Mahadev Properties,','I would like to discuss a property requirement.',''].concat(rows.map(function(r){return r[0]+': '+(String(r[1]||'').trim()||'Not specified');}));
+    return 'https://wa.me/918920030789?text='+encodeURIComponent(lines.join('\n'));
+  }
+  waBtn.addEventListener('click',function(){
+    var f=collect(); if(!f) return;
+    window.open(whatsappUrl(f),'_blank','noopener,noreferrer');
+    say('WhatsApp has opened with your details. Tap Send in WhatsApp to deliver the message.');
+  });
+
+  var pending=null, leadId=null, fingerprint='';
+  function trustedOrigin(o){
+    return o==='https://script.google.com' || o==='https://script.googleusercontent.com' || /^https:\/\/[a-z0-9-]+[.-]script\.googleusercontent\.com$/.test(o);
+  }
+  window.addEventListener('message',function(e){
+    if(!pending || !trustedOrigin(e.origin)) return;
+    var d=e.data||{}; if(d.type!=='mahadev-lead' || d.id!==pending.id) return;
+    clearTimeout(pending.timer); pending.frame.remove(); pending=null; submit.disabled=false; submit.textContent='Submit the form';
+    if(d.ok){ say('Thank you. Your enquiry has been saved and our team will call you.'); fallback.hidden=true; form.reset(); if(form.dataset.defaultRequirement) form.elements.requirement.value=form.dataset.defaultRequirement; fingerprint=''; }
+    else { say('Your enquiry could not be saved. Please try again, or send it on WhatsApp.'); fallback.hidden=false; }
+  });
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); if(pending) return;
+    var f=collect(); if(!f) return;
+    fallback.href=whatsappUrl(f);
+    var endpoint=window.MAHADEV_CONFIG && window.MAHADEV_CONFIG.leadEndpoint;
+    if(!endpoint || !/^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/exec$/.test(endpoint)){
+      say('Online saving is not available right now. Please send your details on WhatsApp.'); fallback.hidden=false; return;
+    }
+    var current=JSON.stringify(f); if(current!==fingerprint){ leadId=uuid(); fingerprint=current; }
+    f.id=leadId; f.consent='Yes'; f.source=location.origin+location.pathname; f.referrer=document.referrer; f.utm=new URLSearchParams(location.search).toString().slice(0,1000);
+    var frame=document.createElement('iframe'); frame.name='lead-'+f.id; frame.hidden=true; frame.title='Enquiry submission'; document.body.appendChild(frame);
+    var post=document.createElement('form'); post.method='POST'; post.action=endpoint; post.target=frame.name; post.hidden=true;
+    Object.keys(f).forEach(function(k){ var i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=f[k]; post.appendChild(i); });
+    document.body.appendChild(post);
+    submit.disabled=true; submit.textContent='Submitting…'; say('Submitting your enquiry…'); fallback.hidden=true;
+    pending={id:f.id,frame:frame,timer:setTimeout(function(){
+      frame.remove(); pending=null; submit.disabled=false; submit.textContent='Submit the form';
+      say('We could not confirm your enquiry was saved. Please try again, or send it on WhatsApp.'); fallback.hidden=false;
+    },25000)};
+    post.submit(); post.remove();
+  });
+})();
+
+</script>
 </body>
 </html>
