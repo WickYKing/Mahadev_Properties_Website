@@ -29,60 +29,102 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Check source images
+      - name: Build protected static website
+        shell: bash
         run: |
-          echo "Checking public/assets..."
-          ls -la public || true
-          ls -la public/assets || true
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
 
-          test -f public/assets/logo.webp || {
-            echo "::error::public/assets/logo.webp is missing"
-            exit 1
+          const root = process.cwd();
+          const dist = path.join(root, 'dist');
+          fs.rmSync(dist, { recursive: true, force: true });
+          fs.mkdirSync(dist, { recursive: true });
+
+          const cssFile = path.join(root, 'style.css');
+          if (!fs.existsSync(cssFile)) throw new Error('style.css is missing');
+          const css = fs.readFileSync(cssFile, 'utf8');
+
+          const localJsNames = ['config.js', 'script.js', 'gallery.js', 'instagram-reels.js'];
+          const localJs = new Map();
+          for (const name of localJsNames) {
+            const p = path.join(root, name);
+            if (fs.existsSync(p)) localJs.set(name, fs.readFileSync(p, 'utf8'));
           }
 
-      - name: Validate configuration
-        env:
-          LEAD_ENDPOINT: ${{ secrets.LEAD_ENDPOINT }}
-        run: |
-          if [ -z "$LEAD_ENDPOINT" ]; then
-            echo "::error::LEAD_ENDPOINT secret is missing."
-            exit 1
-          fi
+          const htmlFiles = fs.readdirSync(root).filter(f => f.toLowerCase().endsWith('.html'));
+          if (!htmlFiles.length) throw new Error('No HTML files found');
 
-      - name: Build production website
-        env:
-          LEAD_ENDPOINT: ${{ secrets.LEAD_ENDPOINT }}
-        run: npm run build
+          for (const fileName of htmlFiles) {
+            let html = fs.readFileSync(path.join(root, fileName), 'utf8');
 
-      - name: Ensure static images are deployed
-        run: |
-          mkdir -p dist/assets
+            html = html.replace(
+              /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bhref=["'](?:\.\/)?style\.css["'])[^>]*>/gi,
+              `<style>\n${css}\n</style>`
+            );
 
-          cp -a public/assets/. dist/assets/
+            const deferred = [];
+            html = html.replace(
+              /<script\b([^>]*?)\bsrc=["']([^"']+\.js)["']([^>]*)>\s*<\/script>/gi,
+              (tag, before, src, after) => {
+                const cleanSrc = src.replace(/^\.\//, '');
+                if (!localJs.has(cleanSrc)) return tag;
+                const attrs = `${before || ''} ${after || ''}`;
+                const code = localJs.get(cleanSrc);
+                if (/\bdefer\b/i.test(attrs)) {
+                  deferred.push(code);
+                  return '';
+                }
+                return `<script>\n${code}\n</script>`;
+              }
+            );
 
-          if [ -f public/CNAME ]; then
-            cp public/CNAME dist/CNAME
-          fi
+            if (deferred.length) {
+              const deferredBlock = `<script>\n${deferred.join('\n;\n')}\n</script>`;
+              if (/<\/body>/i.test(html)) html = html.replace(/<\/body>/i, `${deferredBlock}\n</body>`);
+              else html += `\n${deferredBlock}\n`;
+            }
 
-          echo "Production assets:"
-          ls -lah dist/assets/
-
-      - name: Verify logo exists in production
-        run: |
-          test -f dist/assets/logo.webp || {
-            echo "::error::dist/assets/logo.webp was not created"
-            exit 1
+            fs.writeFileSync(path.join(dist, fileName), html);
           }
 
-          test -s dist/assets/logo.webp || {
-            echo "::error::dist/assets/logo.webp is empty"
-            exit 1
+          const assetsSource = path.join(root, 'assets');
+          if (!fs.existsSync(assetsSource)) throw new Error('assets/ directory is missing');
+          fs.cpSync(assetsSource, path.join(dist, 'assets'), { recursive: true });
+
+          for (const file of ['CNAME', 'robots.txt', 'sitemap.xml']) {
+            const src = path.join(root, file);
+            if (fs.existsSync(src)) fs.copyFileSync(src, path.join(dist, file));
           }
 
-          echo "Logo verified successfully."
+          if (!fs.existsSync(path.join(dist, 'index.html'))) throw new Error('index.html was not built');
+          if (!fs.existsSync(path.join(dist, 'CNAME'))) throw new Error('CNAME was not built');
+
+          const forbidden = [];
+          function walk(dir) {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const full = path.join(dir, entry.name);
+              if (entry.isDirectory()) walk(full);
+              else if (/\.(css|js|gs|cmd|md)$/i.test(entry.name)) forbidden.push(path.relative(dist, full));
+            }
+          }
+          walk(dist);
+          if (forbidden.length) throw new Error(`Forbidden production files: ${forbidden.join(', ')}`);
+
+          for (const fileName of htmlFiles) {
+            const built = fs.readFileSync(path.join(dist, fileName), 'utf8');
+            if (/(?:href|src)=["'](?:\.\/)?(?:style\.css|config\.js|script\.js|gallery\.js|instagram-reels\.js)["']/i.test(built)) {
+              throw new Error(`${fileName} still references a standalone source file`);
+            }
+          }
+
+          console.log(`Built ${htmlFiles.length} HTML pages without standalone CSS/JS source files.`);
+          NODE
+
+      - name: Verify deployment files
+        run: |
+          echo "Files that will be published:"
+          find dist -maxdepth 2 -type f -print | sort
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
