@@ -2,7 +2,8 @@ name: Build and deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -15,55 +16,93 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 22
 
-      - name: Configure Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Validate required configuration
+      - name: Check source images
+        run: |
+          echo "Checking public/assets..."
+          ls -la public || true
+          ls -la public/assets || true
+
+          test -f public/assets/logo.webp || {
+            echo "::error::public/assets/logo.webp is missing"
+            exit 1
+          }
+
+      - name: Validate configuration
         env:
           LEAD_ENDPOINT: ${{ secrets.LEAD_ENDPOINT }}
         run: |
           if [ -z "$LEAD_ENDPOINT" ]; then
-            echo "::error::Repository secret LEAD_ENDPOINT is not configured."
-            exit 1
-          fi
-          if ! printf '%s' "$LEAD_ENDPOINT" | grep -Eq '^https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec$'; then
-            echo "::error::LEAD_ENDPOINT is not a valid Google Apps Script /exec URL."
+            echo "::error::LEAD_ENDPOINT secret is missing."
             exit 1
           fi
 
-      - name: Build production site
+      - name: Build production website
         env:
           LEAD_ENDPOINT: ${{ secrets.LEAD_ENDPOINT }}
         run: npm run build
 
-      - name: Upload Pages artifact
+      - name: Ensure static images are deployed
+        run: |
+          mkdir -p dist/assets
+
+          cp -a public/assets/. dist/assets/
+
+          if [ -f public/CNAME ]; then
+            cp public/CNAME dist/CNAME
+          fi
+
+          echo "Production assets:"
+          ls -lah dist/assets/
+
+      - name: Verify logo exists in production
+        run: |
+          test -f dist/assets/logo.webp || {
+            echo "::error::dist/assets/logo.webp was not created"
+            exit 1
+          }
+
+          test -s dist/assets/logo.webp || {
+            echo "::error::dist/assets/logo.webp is empty"
+            exit 1
+          }
+
+          echo "Logo verified successfully."
+
+      - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
   deploy:
-    if: github.ref == 'refs/heads/main'
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     permissions:
       pages: write
       id-token: write
+
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
