@@ -24,6 +24,7 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+<<<<<<< HEAD
       - name: Prepare clean production site
         run: |
           rm -rf dist
@@ -44,6 +45,103 @@ jobs:
           fi
 
           echo "Production files:"
+=======
+      - name: Build protected static website
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const root = process.cwd();
+          const dist = path.join(root, 'dist');
+          fs.rmSync(dist, { recursive: true, force: true });
+          fs.mkdirSync(dist, { recursive: true });
+
+          const cssFile = path.join(root, 'style.css');
+          if (!fs.existsSync(cssFile)) throw new Error('style.css is missing');
+          const css = fs.readFileSync(cssFile, 'utf8');
+
+          const localJsNames = ['config.js', 'script.js', 'gallery.js', 'instagram-reels.js'];
+          const localJs = new Map();
+          for (const name of localJsNames) {
+            const p = path.join(root, name);
+            if (fs.existsSync(p)) localJs.set(name, fs.readFileSync(p, 'utf8'));
+          }
+
+          const htmlFiles = fs.readdirSync(root).filter(f => f.toLowerCase().endsWith('.html'));
+          if (!htmlFiles.length) throw new Error('No HTML files found');
+
+          for (const fileName of htmlFiles) {
+            let html = fs.readFileSync(path.join(root, fileName), 'utf8');
+
+            html = html.replace(
+              /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bhref=["'](?:\.\/)?style\.css["'])[^>]*>/gi,
+              `<style>\n${css}\n</style>`
+            );
+
+            const deferred = [];
+            html = html.replace(
+              /<script\b([^>]*?)\bsrc=["']([^"']+\.js)["']([^>]*)>\s*<\/script>/gi,
+              (tag, before, src, after) => {
+                const cleanSrc = src.replace(/^\.\//, '');
+                if (!localJs.has(cleanSrc)) return tag;
+                const attrs = `${before || ''} ${after || ''}`;
+                const code = localJs.get(cleanSrc);
+                if (/\bdefer\b/i.test(attrs)) {
+                  deferred.push(code);
+                  return '';
+                }
+                return `<script>\n${code}\n</script>`;
+              }
+            );
+
+            if (deferred.length) {
+              const deferredBlock = `<script>\n${deferred.join('\n;\n')}\n</script>`;
+              if (/<\/body>/i.test(html)) html = html.replace(/<\/body>/i, `${deferredBlock}\n</body>`);
+              else html += `\n${deferredBlock}\n`;
+            }
+
+            fs.writeFileSync(path.join(dist, fileName), html);
+          }
+
+          const assetsSource = path.join(root, 'assets');
+          if (!fs.existsSync(assetsSource)) throw new Error('assets/ directory is missing');
+          fs.cpSync(assetsSource, path.join(dist, 'assets'), { recursive: true });
+
+          for (const file of ['CNAME', 'robots.txt', 'sitemap.xml']) {
+            const src = path.join(root, file);
+            if (fs.existsSync(src)) fs.copyFileSync(src, path.join(dist, file));
+          }
+
+          if (!fs.existsSync(path.join(dist, 'index.html'))) throw new Error('index.html was not built');
+          if (!fs.existsSync(path.join(dist, 'CNAME'))) throw new Error('CNAME was not built');
+
+          const forbidden = [];
+          function walk(dir) {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const full = path.join(dir, entry.name);
+              if (entry.isDirectory()) walk(full);
+              else if (/\.(css|js|gs|cmd|md)$/i.test(entry.name)) forbidden.push(path.relative(dist, full));
+            }
+          }
+          walk(dist);
+          if (forbidden.length) throw new Error(`Forbidden production files: ${forbidden.join(', ')}`);
+
+          for (const fileName of htmlFiles) {
+            const built = fs.readFileSync(path.join(dist, fileName), 'utf8');
+            if (/(?:href|src)=["'](?:\.\/)?(?:style\.css|config\.js|script\.js|gallery\.js|instagram-reels\.js)["']/i.test(built)) {
+              throw new Error(`${fileName} still references a standalone source file`);
+            }
+          }
+
+          console.log(`Built ${htmlFiles.length} HTML pages without standalone CSS/JS source files.`);
+          NODE
+
+      - name: Verify deployment files
+        run: |
+          echo "Files that will be published:"
+>>>>>>> df120e59a99d0b30f560dbc6526fc74c96ce2d05
           find dist -maxdepth 2 -type f -print | sort
 
       - name: Upload GitHub Pages artifact
